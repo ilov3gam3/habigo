@@ -39,7 +39,7 @@
             <div class="card-body">
               <h5 class="card-title"><%= r.getDescription() %></h5>
               <p class="card-text"><%= r.getDescription() %></p>
-              <a href="room-detail.jsp?id=<%= r.getId() %>" class="btn btn-sm btn-primary">Liên hệ ngay</a>
+              <a href="<%=request.getContextPath()%>/room-detail?id=<%= r.getId() %>" class="btn btn-sm btn-primary">Xem chi tiết</a>
             </div>
           </div>
         </div>
@@ -59,7 +59,7 @@
             <div class="card-body">
               <h6 class="card-title"><%= r.getDescription() %></h6>
               <p class="text-muted mb-2">Giá chỉ: <strong><%= r.getPrice() %> VNĐ</strong></p>
-              <a href="room-detail.jsp?id=<%= r.getId() %>" class="btn btn-sm btn-outline-primary">Liên hệ ngay</a>
+              <a href="<%=request.getContextPath()%>/room-detail?id=<%= r.getId() %>" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
             </div>
           </div>
         </div>

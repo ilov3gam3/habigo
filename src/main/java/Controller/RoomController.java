@@ -121,4 +121,12 @@ public class RoomController {
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
+
+    @WebServlet("/room-detail")
+    public static class RoomDetail extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            req.getRequestDispatcher("/views/public/room-detail.jsp").forward(req, resp);
+        }
+    }
 }
