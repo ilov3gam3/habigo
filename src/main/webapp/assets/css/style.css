@@ -1,0 +1,159 @@
+/* Đảm bảo footer luôn ở cuối */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================= */
+/* Custom màu primary Bootstrap  */
+/* ============================= */
+:root {
+    --bs-primary: #6155F5; /* tím nhạt ví dụ */
+    --bs-primary-rgb: 97, 85, 245;
+}
+
+.text-primary {
+    color: var(--bs-primary) !important;
+}
+
+/* Nút primary */
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+    background-color: #5548d9;
+    border-color: #5548d9;
+}
+/* Normal outline button */
+.btn-outline-primary {
+    color: #5548d9;
+    border-color: #5548d9;
+    background-color: transparent;
+}
+
+/* Hover + focus */
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: #5548d9;
+    border-color: #5548d9;
+    color: #fff;
+}
+
+/* Khi đang active (được chọn giống tab) */
+.btn-outline-primary.active {
+    background-color: #5548d9;
+    border-color: #5548d9;
+    color: #fff;
+}
+
+
+/* Active link */
+.nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--bs-primary);
+}
+
+/* Footer link style */
+footer a {
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* ============================= */
+/* Auth pages (Login/Register/Forgot/Reset) */
+/* ============================= */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+}
+
+/* Panel trái: background + slogan */
+.auth-left {
+    flex: 1;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px;
+    background-size: cover;
+    background-position: center;
+}
+.auth-left h1 {
+    font-weight: bold;
+    font-size: 2rem;
+}
+.auth-left p {
+    font-size: 1rem;
+    max-width: 400px;
+}
+
+/* Panel phải: form */
+.auth-right {
+    flex: 1;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Box chứa form */
+.auth-box {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.1);
+}
+.auth-box h3 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.auth-box h6 {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+/* Button chính */
+.auth-box .btn-primary {
+    background-color: var(--bs-primary);
+    border: none;
+}
+.auth-box .btn-primary:hover {
+    background-color: #5746d8;
+}
+
+/* Social buttons */
+.social-btn {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    background: #fff;
+}
+.social-btn img {
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* Link nhỏ trong form */
+.auth-box small a {
+    text-decoration: none;
+    color: var(--bs-primary);
+    font-weight: bold;
+}
+.auth-box small a:hover {
+    text-decoration: underline;
+}
+
+
