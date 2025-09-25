@@ -32,4 +32,6 @@
     <% } %>
   });
 </script>
-<jsp:include page="../user/chat.jsp" />
+<% if (!request.getRequestURI().endsWith("/chat.jsp")) { %>
+<jsp:include page="../user/chat-dock.jsp" />
+<% } %>

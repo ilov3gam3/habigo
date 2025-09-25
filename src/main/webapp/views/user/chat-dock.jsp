@@ -1,31 +1,9 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="Util.Config" %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat - Messenger</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-    #cometchat {
-      width: 100%;
-      height: 100vh; /* Chiếm toàn bộ màn hình */
-    }
-  </style>
-</head>
-<body>
-<!-- Container cho widget -->
-<%--<div id="cometchat" style="width:100%; height:100vh;"></div>--%>
-
-<!-- Nhúng script từ CometChat -->
-<script defer src="https://cdn.jsdelivr.net/npm/@cometchat/chat-embed@latest/dist/main.js"></script>
+<%@ page import="Model.User" %>
+<% User user = (User) request.getSession().getAttribute("user"); %>
+<% if (user != null) { %>
 <div id="cometChatMount"></div>
-
+<script defer src="https://cdn.jsdelivr.net/npm/@cometchat/chat-embed@latest/dist/main.js"></script>
 <script>
   const COMETCHAT_CREDENTIALS = {
     appID:     "<%=Config.comet_chat_app_id%>",
@@ -36,8 +14,9 @@
   const COMETCHAT_LAUNCH_OPTIONS = {
     targetElementID: "cometChatMount",   // Element ID to mount the widget
     isDocked:        true,               // true = floating bubble, false = embedded
-    width:           "100%",            // Widget width
-    height:          "100vh",            // Widget height
+    width:  "400px",   // embedded: full
+    height: "600px",  // embedded: full chiều cao
+    theme: "light",
 
     // Optional advanced settings:
     // variantID:        "YOUR_VARIANT_ID",    // Variant configuration ID
@@ -46,7 +25,7 @@
     // dockedAlignment:  "right",              // For docked mode: "left" or "right"
   };
 
-  const COMETCHAT_USER_UID = "<%=%>"; // Replace with your actual user UID
+  const COMETCHAT_USER_UID = "<%=user.getId()%>"; // Replace with your actual user UID
 
   window.addEventListener("DOMContentLoaded", () => {
     CometChatApp.init(COMETCHAT_CREDENTIALS)
@@ -70,6 +49,4 @@
             });
   });
 </script>
-</body>
-</html>
-
+<% } %>

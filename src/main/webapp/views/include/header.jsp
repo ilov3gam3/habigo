@@ -21,6 +21,7 @@
                     <li class="nav-item"><a class="nav-link" href="#">Habigo AI</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Về Chúng Tôi</a></li>
                     <% if (user != null) { %>
+                    <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/views/user/chat.jsp">Chat</a></li>
                     <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/logout">Đăng xuất</a></li>
                     <% } %>
                 </ul>

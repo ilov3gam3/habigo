@@ -1,46 +1,34 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="Util.Config" %>
-<%@ page import="Model.User" %>
-<% User user = (User) request.getSession().getAttribute("user"); %>
-<% if (user != null) { %>
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat - Messenger</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-        #cometchat {
-            width: 100%;
-            height: 100vh; /* Chiếm toàn bộ màn hình */
-        }
-    </style>
-</head>
+<html lang="vi">
+<%@include file="../include/head.jsp" %>
 <body>
 <!-- Container cho widget -->
 <%--<div id="cometchat" style="width:100%; height:100vh;"></div>--%>
-
+<%@include file="../include/header.jsp" %>
 <!-- Nhúng script từ CometChat -->
 <script defer src="https://cdn.jsdelivr.net/npm/@cometchat/chat-embed@latest/dist/main.js"></script>
-<div id="cometChatMount"></div>
-
+<div class="container" id="cometChatMount"></div>
+<% if (user != null) { %>
 <script>
     const COMETCHAT_CREDENTIALS = {
         appID:     "<%=Config.comet_chat_app_id%>",
         appRegion: "<%=Config.comet_chat_app_region%>",
         authKey:   "61c745c12967f118b58089b74492b8b818532417",
     };
-    const IS_DOCKED = <%= !request.getRequestURI().endsWith("/chat.jsp") %>;
     const COMETCHAT_LAUNCH_OPTIONS = {
         targetElementID: "cometChatMount",   // Element ID to mount the widget
-        isDocked:        IS_DOCKED,               // true = floating bubble, false = embedded
-        width:  IS_DOCKED ? "400px" : "100%",   // docked: nhỏ gọn, embedded: full
-        height: IS_DOCKED ? "600px" : "100vh",  // docked: cao vừa phải, embedded: full chiều cao
+        isDocked:        false,               // true = floating bubble, false = embedded
+        width:  "100%",   // docked: nhỏ gọn, embedded: full
+        height: "95vh",  // docked: cao vừa phải, embedded: full chiều cao
+        theme: "light",
+        <% if (request.getRequestURI().endsWith("/chat.jsp")) { %>
+        <% if (request.getParameter("chatWith") != null) { %>
+        chatType: "user",              // "user" hoặc "group"
+        defaultChatID: "<%=request.getParameter("chatWith")%>",    // UID (người dùng) hoặc GUID (nhóm)
+        <% } %>
+        <% } %>
 
         // Optional advanced settings:
         // variantID:        "YOUR_VARIANT_ID",    // Variant configuration ID
@@ -73,8 +61,12 @@
             });
     });
 </script>
+<% } else { %>
+<h1>Vui lòng đăng nhập</h1>
+<% } %>
+<jsp:include page="../include/footer.jsp" />
+<jsp:include page="../include/js.jsp" />
 </body>
 </html>
-<% } %>
 
 

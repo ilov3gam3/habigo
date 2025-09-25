@@ -280,11 +280,9 @@ public class UserController {
                     Config.google_oauth_client_secret,
                     Arrays.asList("openid", "profile", "email")
             ).build();
-            System.out.println(new Config().google_oauth_redirect_uri);
             String loginUrl = googleAuthorizationCodeFlow.newAuthorizationUrl()
                     .setRedirectUri(new Config().google_oauth_redirect_uri)
                     .build();
-            System.out.println(loginUrl);
             resp.sendRedirect(loginUrl);
         }
     }
