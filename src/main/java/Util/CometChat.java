@@ -34,7 +34,7 @@ public class CometChat {
         payload.put("name", user.getEmail());
         payload.put("avatar", user.getAvatar());
         payload.put("link", user.getAvatar());
-        payload.put("role", user.getRole().toString().toLowerCase());
+        payload.put("role", "default");
         payload.put("statusMessage", "Hello " + user.getEmail());
         payload.put("metadata", metadata);
         payload.put("tags", new JSONArray());
@@ -57,6 +57,62 @@ public class CometChat {
                 response.append(responseLine.trim());
             }
             System.out.println("CometChat response: " + response);
+        }
+    }
+
+
+    public static void updateUser(User user, boolean unsetAvatar) throws IOException {
+        String uid = user.getId().toString();
+        URL url = new URL("https://" + Config.comet_chat_app_id + ".api-"
+                + Config.comet_chat_app_region + ".cometchat.io/v3/users/" + uid);
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("PUT");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("apikey", Config.comet_chat_app_api_key);
+        conn.setDoOutput(true);
+
+        // JSON metadata
+        JSONObject privateMeta = new JSONObject();
+        privateMeta.put("email", user.getEmail());
+        privateMeta.put("contactNumber", user.getPhone()); // giả sử User có trường này
+
+        JSONObject metadata = new JSONObject();
+        metadata.put("@private", privateMeta);
+
+        // JSON payload
+        JSONObject payload = new JSONObject();
+        payload.put("name", user.getEmail()); // bạn có thể đổi thành user.getName() nếu muốn
+        payload.put("avatar", user.getAvatar());
+        payload.put("link", user.getAvatar());
+        payload.put("role", "default");
+        payload.put("statusMessage", "Hello " + user.getEmail());
+        payload.put("metadata", metadata);
+
+        // Ví dụ gắn tag
+        JSONArray tags = new JSONArray();
+        tags.put("tenant");
+        payload.put("tags", tags);
+
+        // Send request
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = payload.toString().getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        // Read response
+        int responseCode = conn.getResponseCode();
+        InputStream is = (responseCode < HttpURLConnection.HTTP_BAD_REQUEST)
+                ? conn.getInputStream()
+                : conn.getErrorStream();
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            System.out.println("CometChat update response: " + response);
         }
     }
 

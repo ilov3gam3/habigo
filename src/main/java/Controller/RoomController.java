@@ -16,10 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class RoomController {
     @WebServlet("/landlord/room")
@@ -38,7 +35,7 @@ public class RoomController {
             String name = req.getParameter("name");
             int bedrooms = Integer.parseInt(req.getParameter("bedrooms"));
             int bathrooms = Integer.parseInt(req.getParameter("bathrooms"));
-            double price = Double.parseDouble(req.getParameter("price"));
+            long price = Long.parseLong(req.getParameter("price"));
             float area = Float.parseFloat(req.getParameter("area"));
             String description = req.getParameter("description");
             List<Long> utilityIds = Optional.ofNullable(req.getParameterValues("utilityIds")).stream().flatMap(Arrays::stream)
@@ -87,7 +84,7 @@ public class RoomController {
             String name = req.getParameter("name");
             int bedrooms = Integer.parseInt(req.getParameter("bedrooms"));
             int bathrooms = Integer.parseInt(req.getParameter("bathrooms"));
-            double price = Double.parseDouble(req.getParameter("price"));
+            long price = Long.parseLong(req.getParameter("price"));
             float area = Float.parseFloat(req.getParameter("area"));
             String description = req.getParameter("description");
             List<Long> utilityIds = Optional.ofNullable(req.getParameterValues("utilityIds")).stream().flatMap(Arrays::stream)
@@ -127,6 +124,49 @@ public class RoomController {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             req.getRequestDispatcher("/views/public/room-detail.jsp").forward(req, resp);
+        }
+    }
+    @WebServlet("/search")
+    public static class SearchRoom extends HttpServlet{
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response)
+                throws ServletException, IOException {
+
+            String searchString = request.getParameter("q");
+            String categoryIdStr = request.getParameter("categoryId");
+            String provinceCodeStr = request.getParameter("provinceCode");
+            String[] utilityIdsStr = request.getParameterValues("utilities");
+            String priceMinStr = request.getParameter("priceMin");
+            String priceMaxStr = request.getParameter("priceMax");
+
+            Long categoryId = (categoryIdStr != null && !categoryIdStr.isEmpty())
+                    ? Long.parseLong(categoryIdStr) : null;
+            Integer provinceCode = (provinceCodeStr != null && !provinceCodeStr.isEmpty())
+                    ? Integer.parseInt(provinceCodeStr) : null;
+
+            Set<Long> utilityIds = null;
+            if (utilityIdsStr != null && utilityIdsStr.length > 0) {
+                utilityIds = new HashSet<>();
+                for (String u : utilityIdsStr) {
+                    utilityIds.add(Long.parseLong(u));
+                }
+            }
+
+            Double priceMin = (priceMinStr != null && !priceMinStr.isEmpty())
+                    ? Double.parseDouble(priceMinStr) : null;
+            Double priceMax = (priceMaxStr != null && !priceMaxStr.isEmpty())
+                    ? Double.parseDouble(priceMaxStr) : null;
+            RoomDao roomDao = new RoomDao();
+            CategoryDao categoryDao = new CategoryDao();
+            UtilityDao utilityDao = new UtilityDao();
+            List<Room> rooms = roomDao.searchRooms(searchString, categoryId, provinceCode, utilityIds, priceMin, priceMax);
+
+            // gán categories và utilities cho form
+            request.setAttribute("categoryList", categoryDao.getAll());
+            request.setAttribute("utilities", utilityDao.getAll());
+            request.setAttribute("rooms", rooms);
+
+            request.getRequestDispatcher("/views/public/search.jsp").forward(request, response);
         }
     }
 }

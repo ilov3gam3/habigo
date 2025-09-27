@@ -1,5 +1,6 @@
 package Dao;
 
+import Model.Constant.Role;
 import Model.User;
 import jakarta.persistence.TypedQuery;
 
@@ -33,6 +34,12 @@ public class UserDao extends GenericDao<User> {
                 "SELECT u FROM User u WHERE u.phone = :phone AND u.id != :excludeId", User.class);
         query.setParameter("phone", newPhone);
         query.setParameter("excludeId", excludeId);
+        return query.getResultStream().findFirst().orElse(null);
+    }
+    public User findFirstLandlord(){
+        TypedQuery<User> query = entityManager.createQuery("select u from User u where u.role = :role", User.class);
+        query.setParameter("role", Role.LANDLORD);
+        query.setMaxResults(1);
         return query.getResultStream().findFirst().orElse(null);
     }
 }

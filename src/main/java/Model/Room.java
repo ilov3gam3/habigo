@@ -26,7 +26,7 @@ public class Room extends DistributedEntity {
     private int districtCode;
     private int wardCode;
     private String street;
-    @Column(length = 1500)
+    @Column(length = 5000)
     private String mapEmbedUrl;
     @ElementCollection
     @CollectionTable(
@@ -42,14 +42,17 @@ public class Room extends DistributedEntity {
 
     private int bathrooms;
 
-    private Double price;
+    private long price;
 
     private float area;
-    @Column(columnDefinition = "VARCHAR(1500)")
+    @Column(columnDefinition = "VARCHAR(5000)")
     private String description;
 
     @ManyToMany
     private List<Utility> utilities;
 
     private boolean isAvailable = true;
+
+    private int quantity;
+
 }

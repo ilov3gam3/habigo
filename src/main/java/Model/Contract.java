@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,11 +13,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "bookings")
-public class Booking extends DistributedEntity {
+@Table(name = "contracts")
+public class Contract extends DistributedEntity {
     @ManyToOne
     @JoinColumn(name = "tenant_id", nullable = false)
-    private User tenant; // Người thuê (role = TENANT)
+    private User tenant;
 
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
@@ -25,13 +26,13 @@ public class Booking extends DistributedEntity {
     @Column(nullable = false)
     private LocalDate startDate;
 
-    @Column(nullable = true)
     private LocalDate endDate;
 
-    @Column(nullable = false)
-    private Double pricePerMonth;
+    private long price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Status status;
+
+    @OneToMany
+    private List<Invoice> invoices;
+
 }

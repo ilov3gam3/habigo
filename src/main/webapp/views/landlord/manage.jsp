@@ -69,7 +69,7 @@
                                     <div class="card-body d-flex flex-column">
                                         <h5 class="card-title"><%= r.getName() %></h5>
                                         <p class="card-text mb-1"><strong>Giá:</strong>
-                                            <%= r.getPrice() != null ? String.format("%,.0f VNĐ", r.getPrice()) : "Liên hệ" %></p>
+                                            <%= r.getPrice() != 0 ? String.format("%,d VNĐ", r.getPrice()) : "Liên hệ" %></p>
                                         <p class="card-text mb-1"><strong>Diện tích:</strong> <%= r.getArea() %> m²</p>
                                         <p class="card-text mb-1"><strong>Phòng ngủ:</strong> <%= r.getBedrooms() %>,
                                             <strong>Phòng tắm:</strong> <%= r.getBathrooms() %></p>

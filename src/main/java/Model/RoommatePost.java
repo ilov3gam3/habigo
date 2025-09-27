@@ -14,7 +14,7 @@ public class RoommatePost extends DistributedEntity {
     @ManyToOne
     @JoinColumn(name = "tenant_id", nullable = false)
     private User tenant;
-    @Column(columnDefinition = "VARCHAR(1500)")
+    @Column(columnDefinition = "VARCHAR(5000)")
     private String description;
     private String genderRequirement;
     private Double budget;

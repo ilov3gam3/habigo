@@ -17,7 +17,7 @@ public class Review extends DistributedEntity {
 
     @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
+    private Contract contract;
 
     @Column(nullable = false)
     private int rating;

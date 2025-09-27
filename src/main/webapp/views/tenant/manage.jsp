@@ -1,3 +1,6 @@
+<%@ page import="java.util.List" %>
+<%@ page import="Model.RoommatePost" %>
+<%@ page import="Dao.RoommatePostDao" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!doctype html>
 <html lang="vi">
@@ -46,7 +49,52 @@
 
         <div class="tab-content">
           <div id="posts" class="tab-pane active">
-            <p>Nội dung post...</p>
+            <!-- Nút mở modal -->
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createPostModal">
+              + Tạo bài đăng
+            </button>
+
+            <!-- Danh sách bài đăng -->
+            <div class="row">
+              <%
+                List<RoommatePost> posts = new RoommatePostDao().getPostsOfUser(user);
+                if (posts == null || posts.isEmpty()) {
+              %>
+              <div class="col-12">
+                <div class="alert alert-info">Bạn chưa có bài đăng nào. Hãy tạo mới!</div>
+              </div>
+              <%
+              } else {
+                for (RoommatePost post : posts) {
+              %>
+              <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                  <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-person-lines-fill"></i> Bài đăng tìm bạn cùng trọ</h5>
+                    <p class="card-text"><%= post.getDescription() %></p>
+
+                    <ul class="list-unstyled mb-3">
+                      <li><strong>Giới tính yêu cầu:</strong> <%= post.getGenderRequirement() %></li>
+                      <li><strong>Ngân sách:</strong> <%= post.getBudget() %> VNĐ</li>
+                      <li><strong>Địa điểm:</strong> <%= post.getLocation() %></li>
+                      <li><strong>Thời gian ở:</strong> <%= post.getDuration() %></li>
+                    </ul>
+                  </div>
+                  <%--<div class="card-footer d-flex justify-content-end gap-2">
+                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                      <i class="bi bi-pencil-square"></i> Sửa
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-danger">
+                      <i class="bi bi-trash"></i> Xóa
+                    </a>
+                  </div>--%>
+                </div>
+              </div>
+              <%
+                  }
+                }
+              %>
+            </div>
           </div>
           <div id="history" class="tab-pane">
             <p>Nội dung lịch sử giao dịch...</p>
@@ -67,6 +115,7 @@
 </main>
 <!-- Modal -->
 <%@include file="../user/profile-modal.jsp" %>
+<%@include file="create-post-modal.jsp" %>
 <%@include file="../include/footer.jsp" %>
 <%@include file="../include/js.jsp" %>
 <script>

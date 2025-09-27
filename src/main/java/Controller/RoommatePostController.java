@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
 public class RoommatePostController {
     @WebServlet("/tenant/post")
@@ -30,8 +31,19 @@ public class RoommatePostController {
             roommatePost.setLocation(location);
             roommatePost.setDuration(duration);
             roommatePost.setTenant(user);
+            roommatePostDao.save(roommatePost);
             req.getSession().setAttribute("success", "Đăng bài thành công.");
-            resp.sendRedirect(req.getContextPath() + "/tenant/post");
+            resp.sendRedirect(req.getHeader("referer"));
+        }
+    }
+
+    @WebServlet("/find-roommate")
+    public static class FindRoommateServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            List<RoommatePost> roommatePosts = new RoommatePostDao().getAllWithUser();
+            req.setAttribute("roommatePosts", roommatePosts);
+            req.getRequestDispatcher("/views/public/find-roommate.jsp").forward(req, resp);
         }
     }
 }

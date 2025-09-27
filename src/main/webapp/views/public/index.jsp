@@ -32,14 +32,30 @@
       </div>
       <div class="row">
         <% for (Room r : rooms) { %>
-        <div class="col-md-3 mb-4">
-          <div class="card h-100 shadow-sm">
+        <div class="col-md-3 mb-4 d-flex">
+          <div class="card shadow-sm h-100 w-100">
+            <!-- Ảnh cùng chiều cao -->
             <img src="<%= r.getImages().iterator().next() != null ? request.getContextPath() + "/" + r.getImages().iterator().next() : "https://via.placeholder.com/300x200" %>"
-                 class="card-img-top" alt="Room image">
-            <div class="card-body">
-              <h5 class="card-title"><%= r.getDescription() %></h5>
-              <p class="card-text"><%= r.getDescription() %></p>
-              <a href="<%=request.getContextPath()%>/room-detail?id=<%= r.getId() %>" class="btn btn-sm btn-primary">Xem chi tiết</a>
+                 class="card-img-top"
+                 alt="Room image"
+                 style="height:200px; object-fit:cover;">
+
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title" style="font-size:16px; font-weight:600; min-height:45px;">
+                <%= r.getName() %>
+              </h5>
+
+              <!-- Description rút gọn -->
+              <p class="card-text mb-3"
+                 style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; min-height:65px;">
+                <%= r.getDescription() %>
+              </p>
+
+              <!-- Nút luôn dính cuối -->
+              <div class="mt-auto">
+                <a href="<%=request.getContextPath()%>/room-detail?id=<%= r.getId() %>"
+                   class="btn btn-sm btn-primary">Xem chi tiết</a>
+              </div>
             </div>
           </div>
         </div>
@@ -49,23 +65,43 @@
 
     <!-- Thành Phố Đà Nẵng -->
     <section class="mb-5">
-      <h3 class="mb-4">Thành Phố Đà Nẵng</h3>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Đề Xuất Nổi Bật</h3>
+        <a href="#" class="btn btn-primary btn-sm">Xem Tất Cả</a>
+      </div>
       <div class="row">
         <% for (Room r : rooms) { %>
-        <div class="col-md-3 mb-4">
-          <div class="card h-100 shadow-sm">
-            <img src="<%= r.getImages().iterator().next() != null ? r.getImages().iterator().next() : "https://via.placeholder.com/300x200" %>"
-                 class="card-img-top" alt="Room image">
-            <div class="card-body">
-              <h6 class="card-title"><%= r.getDescription() %></h6>
-              <p class="text-muted mb-2">Giá chỉ: <strong><%= r.getPrice() %> VNĐ</strong></p>
-              <a href="<%=request.getContextPath()%>/room-detail?id=<%= r.getId() %>" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+        <div class="col-md-3 mb-4 d-flex">
+          <div class="card shadow-sm h-100 w-100">
+            <!-- Ảnh cùng chiều cao -->
+            <img src="<%= r.getImages().iterator().next() != null ? request.getContextPath() + "/" + r.getImages().iterator().next() : "https://via.placeholder.com/300x200" %>"
+                 class="card-img-top"
+                 alt="Room image"
+                 style="height:200px; object-fit:cover;">
+
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title" style="font-size:16px; font-weight:600; min-height:45px;">
+                <%= r.getName() %>
+              </h5>
+
+              <!-- Description rút gọn -->
+              <p class="card-text mb-3"
+                 style="display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; min-height:65px;">
+                <%= r.getDescription() %>
+              </p>
+
+              <!-- Nút luôn dính cuối -->
+              <div class="mt-auto">
+                <a href="<%=request.getContextPath()%>/room-detail?id=<%= r.getId() %>"
+                   class="btn btn-sm btn-primary">Xem chi tiết</a>
+              </div>
             </div>
           </div>
         </div>
         <% } %>
       </div>
     </section>
+
 
   </div>
 </main>

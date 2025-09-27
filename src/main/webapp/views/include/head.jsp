@@ -6,6 +6,8 @@
 
     <title><%=Config.app_name%></title>
 
+    <link rel="icon" href="<%=request.getContextPath()%>/assets/images/icon.png">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
