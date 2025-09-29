@@ -99,7 +99,6 @@ public class StartListener implements ServletContextListener {
                 """);
             room1.setUtilities(List.of(utility1, utility2, utility4, utility5, utility7, utility8, utility9));
             room1.setAvailable(true);
-            room1.setQuantity(10);
             roomDao.save(room1);
 
             // create room2
@@ -135,7 +134,6 @@ public class StartListener implements ServletContextListener {
                 """);
             room2.setUtilities(List.of(utility2, utility3, utility4, utility5, utility6, utility7, utility8, utility9));
             room2.setAvailable(true);
-            room2.setQuantity(8);
             roomDao.save(room2);
         }
     }

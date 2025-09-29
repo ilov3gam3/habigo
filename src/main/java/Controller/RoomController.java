@@ -1,12 +1,11 @@
 package Controller;
 
 import Dao.CategoryDao;
+import Dao.PaymentDao;
 import Dao.RoomDao;
 import Dao.UtilityDao;
-import Model.Category;
-import Model.Room;
-import Model.User;
-import Model.Utility;
+import Model.*;
+import Util.Config;
 import Util.UploadImage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -60,7 +59,15 @@ public class RoomController {
             room.setArea(area);
             room.setDescription(description);
             room.setUtilities(utilities);
-            room.setAvailable(true);
+            long purchasedSlots = new PaymentDao().countNormalSlots(landlord);
+            long totalSlots = Config.freePost + purchasedSlots;
+            long availablePosts = new RoomDao().countNormalRooms(landlord);
+            if (availablePosts < totalSlots) {
+                room.setAvailable(true);
+            } else {
+                room.setAvailable(false);
+            }
+            room.setPremium(false);
             new RoomDao().save(room);
             req.getSession().setAttribute("success", "Thêm phòng thành công.");
             resp.sendRedirect(req.getHeader("referer"));
@@ -169,4 +176,83 @@ public class RoomController {
             request.getRequestDispatcher("/views/public/search.jsp").forward(request, response);
         }
     }
+
+    @WebServlet("/landlord/change-status")
+    public static class ChangeStatus extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            long id = Long.parseLong(req.getParameter("id"));
+            User landlord = (User) req.getSession().getAttribute("user");
+
+            RoomDao roomDao = new RoomDao();
+            Room room = roomDao.getById(id);
+
+            if (room == null || !room.getLandlord().equals(landlord)) {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền thay đổi phòng này");
+                return;
+            }
+
+            if (!room.isAvailable()) {
+                // đang false, muốn bật lên true -> kiểm tra quota
+                long purchasedSlots = new PaymentDao().countNormalSlots(landlord);
+                long totalSlots = Config.freePost + purchasedSlots;
+                long availablePosts = roomDao.countNormalRooms(landlord);
+
+                if (availablePosts < totalSlots) {
+                    room.setAvailable(true);  // còn slot thì bật
+                    roomDao.update(room);
+                } else {
+                    req.getSession().setAttribute("error", "Bạn đã đạt giới hạn số bài hiển thị.");
+                    resp.sendRedirect(req.getHeader("referer"));
+                    return;
+                }
+            } else {
+                // đang true, muốn tắt -> luôn cho phép
+                room.setAvailable(false);
+                roomDao.update(room);
+            }
+            req.getSession().setAttribute("success", "Thay đổi trạng thái thành công.");
+            resp.sendRedirect(req.getHeader("referer"));
+        }
+    }
+    @WebServlet("/landlord/change-premium")
+    public static class ChangePremiumServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            long id = Long.parseLong(req.getParameter("id"));
+            User landlord = (User) req.getSession().getAttribute("user");
+            RoomDao roomDao = new RoomDao();
+            PaymentDao paymentDao = new PaymentDao();
+
+            Room room = roomDao.getById(id);
+
+            if (room == null || !room.getLandlord().equals(landlord)) {
+                req.getSession().setAttribute("error", "Phòng không tồn tại hoặc bạn không có quyền.");
+                resp.sendRedirect(req.getHeader("referer"));
+                return;
+            }
+
+            if (!room.isPremium()) {
+                // đang false, muốn bật premium -> kiểm tra quota
+                long purchasedPremiumSlots = paymentDao.countPremiumSlots(landlord);
+                long premiumRooms = roomDao.countPremiumRooms(landlord);
+
+                if (premiumRooms < purchasedPremiumSlots) {
+                    room.setPremium(true);
+                    roomDao.update(room);
+                    req.getSession().setAttribute("success", "Bật Premium thành công.");
+                } else {
+                    req.getSession().setAttribute("error", "Bạn đã đạt giới hạn số bài Premium.");
+                }
+            } else {
+                // đang true, muốn tắt premium -> luôn cho phép
+                room.setPremium(false);
+                roomDao.update(room);
+                req.getSession().setAttribute("success", "Tắt Premium thành công.");
+            }
+
+            resp.sendRedirect(req.getHeader("referer"));
+        }
+    }
+
 }

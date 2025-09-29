@@ -23,7 +23,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -260,6 +259,7 @@ public class UserController {
                 User user = (User) req.getSession().getAttribute("user");
                 user.setAvatar(filename);
                 new UserDao().update(user);
+                CometChat.updateUser(user);
                 req.getSession().setAttribute("user", user);
             } catch (ServletException e){
                 e.printStackTrace();
@@ -458,6 +458,7 @@ public class UserController {
             user.setPhone(phone);
             user.setEmail(email);
             userDao.update(user);
+            CometChat.updateUser(user);
             req.getSession().setAttribute("user", user);
             req.getSession().setAttribute("success", "Cập nhật thành công.");
             resp.sendRedirect(req.getHeader("referer"));

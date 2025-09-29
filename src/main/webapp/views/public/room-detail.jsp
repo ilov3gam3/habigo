@@ -77,60 +77,6 @@
                 <a href="<%=request.getContextPath()%>/views/user/chat.jsp?chatWith=<%=room.getLandlord().getId()%>">
                     <button class="btn btn-primary">Chat với chủ nhà</button>
                 </a>
-                <!-- Form kiểm tra phòng trống -->
-                <form method="get" action="room-detail" class="border p-3 rounded mb-3">
-                    <input type="hidden" name="id" value="<%= roomId %>"/>
-                    <div class="mb-2">
-                        <label for="fromDate" class="form-label">Ngày bắt đầu</label>
-                        <input type="date" id="fromDate" name="fromDate" class="form-control"
-                               value="<%= request.getParameter("fromDate") != null ? request.getParameter("fromDate") : "" %>"
-                               required>
-                    </div>
-                    <div class="mb-2">
-                        <label for="months" class="form-label">Số tháng thuê</label>
-                        <select id="months" name="months" class="form-select">
-                            <% for(int i=1;i<=12;i++){ %>
-                            <option value="<%=i%>" <%= (request.getParameter("months")!=null && request.getParameter("months").equals(String.valueOf(i))) ? "selected" : "" %>>
-                                <%=i%>
-                            </option>
-                            <% } %>
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label for="toDate" class="form-label">Ngày kết thúc</label>
-                        <input type="date" id="toDate" name="toDate" class="form-control"
-                               value="<%= request.getParameter("toDate") != null ? request.getParameter("toDate") : "" %>"
-                               readonly>
-                    </div>
-                    <button type="submit" class="btn btn-outline-success">Kiểm tra phòng trống</button>
-
-                    <%
-                        String fromDateStr = request.getParameter("fromDate");
-                        String toDateStr = request.getParameter("toDate");
-                        if(fromDateStr != null && toDateStr != null){
-                            java.time.LocalDate fromDate = java.time.LocalDate.parse(fromDateStr);
-                            java.time.LocalDate toDate = java.time.LocalDate.parse(toDateStr);
-                            int available = new Dao.RoomDao().getAvailableRooms(roomId, fromDate, toDate);
-
-                            if(available > 0){
-                    %>
-                    <p class="mt-2 text-success"><%= available %> phòng còn trống</p>
-                    <!-- Nút thuê ngay, submit sang servlet đặt phòng -->
-                    <% if (user == null) { %>
-                    <button type="button" onclick="toastr.info('Vui lòng đăng nhập')" class="btn btn-primary">
-                        Thuê ngay
-                    </button>
-                    <% } else { %>
-                    <button type="submit" formaction="rent-room" formmethod="post" class="btn btn-primary">
-                        Thuê ngay
-                    </button>
-                    <% } %>
-
-                    <%  } else { %>
-                    <p class="mt-2 text-danger">Hết phòng</p>
-                    <%  }
-                    } %>
-                </form>
             </div>
         </div>
 

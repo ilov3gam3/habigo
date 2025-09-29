@@ -53,6 +53,5 @@ public class Room extends DistributedEntity {
 
     private boolean isAvailable = true;
 
-    private int quantity;
-
+    private boolean isPremium = false;
 }

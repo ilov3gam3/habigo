@@ -61,7 +61,7 @@ public class CometChat {
     }
 
 
-    public static void updateUser(User user, boolean unsetAvatar) throws IOException {
+    public static void updateUser(User user) throws IOException {
         String uid = user.getId().toString();
         URL url = new URL("https://" + Config.comet_chat_app_id + ".api-"
                 + Config.comet_chat_app_region + ".cometchat.io/v3/users/" + uid);
@@ -91,7 +91,6 @@ public class CometChat {
 
         // Ví dụ gắn tag
         JSONArray tags = new JSONArray();
-        tags.put("tenant");
         payload.put("tags", tags);
 
         // Send request

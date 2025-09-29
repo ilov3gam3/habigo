@@ -20,4 +20,10 @@ public class Config {
     public static String comet_chat_app_id = "";
     public static String comet_chat_app_region = "in";
     public static String comet_chat_app_api_key = "";
+    public static int freePost = 2;
+    public static int pricePerPost = 30000;
+    public static int premiumPrice = 50000;
+
+//  public static String gemini_api_key = "";
+    public static String gemini_api_key = "";
 }

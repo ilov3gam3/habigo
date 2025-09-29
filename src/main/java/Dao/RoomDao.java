@@ -1,5 +1,6 @@
 package Dao;
 
+import Model.Constant.SlotType;
 import Model.Room;
 import Model.User;
 import jakarta.persistence.TypedQuery;
@@ -30,7 +31,10 @@ public class RoomDao extends GenericDao<Room> {
         CriteriaQuery<Room> cq = cb.createQuery(Room.class);
         Root<Room> room = cq.from(Room.class);
 
-        Predicate predicate = cb.isTrue(room.get("isAvailable"));
+        Predicate predicate = cb.or(
+                cb.isTrue(room.get("isAvailable")),
+                cb.isTrue(room.get("isPremium"))
+        );
 
         // searchString
         if (searchString != null && !searchString.trim().isEmpty()) {
@@ -74,24 +78,50 @@ public class RoomDao extends GenericDao<Room> {
         return query.getResultList();
     }
 
-    public int getAvailableRooms(Long roomId, LocalDate startDate, LocalDate endDate) {
-        // Đếm số hợp đồng giao thoa trong khoảng thời gian
-        Long booked = entityManager.createQuery(
-                        "SELECT COUNT(c) " +
-                                "FROM Contract c " +
-                                "WHERE c.room.id = :roomId " +
-                                "AND c.startDate <= :endDate " +
-                                "AND c.endDate >= :startDate", Long.class)
-                .setParameter("roomId", roomId)
-                .setParameter("startDate", startDate)
-                .setParameter("endDate", endDate)
-                .getSingleResult();
-
-        // Lấy tổng số phòng có sẵn
-        Room room = entityManager.find(Room.class, roomId);
-        int total = room.getQuantity();
-
-        return total - booked.intValue();
+    public long countAvailableRooms(User landlord, int a) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "select count(r) from Room r " +
+                        "where r.landlord = :landlord and r.isAvailable = true",
+                Long.class
+        );
+        query.setParameter("landlord", landlord);
+        return query.getSingleResult();
+    }
+    // đếm các phòng hiển thị bình thường (available && not premium)
+    public long countNormalRooms(User landlord) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "select count(r) from Room r " +
+                        "where r.landlord = :landlord " +
+                        "and r.isAvailable = true " +
+                        "and r.isPremium = false",
+                Long.class
+        );
+        query.setParameter("landlord", landlord);
+        return query.getSingleResult();
     }
 
+    // đếm các phòng hiển thị premium (available && premium)
+    public long countPremiumRooms(User landlord) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "select count(r) from Room r " +
+                        "where r.landlord = :landlord " +
+                        "and r.isAvailable = true " +
+                        "and r.isPremium = true",
+                Long.class
+        );
+        query.setParameter("landlord", landlord);
+        return query.getSingleResult();
+    }
+    public List<Room> getAllNormalRooms(){
+        TypedQuery<Room> query = entityManager.createQuery("select r from Room r where r.isAvailable = true", Room.class);
+        return query.getResultList();
+    }
+    public List<Room> getAllPremiumRooms(){
+        TypedQuery<Room> query = entityManager.createQuery("select r from Room r where r.isPremium = true", Room.class);
+        return query.getResultList();
+    }
+    public List<Room> getAllNormalAndPremium(){
+        TypedQuery<Room> query = entityManager.createQuery("select r from Room r where r.isAvailable = true or r.isPremium = true ", Room.class);
+        return query.getResultList();
+    }
 }

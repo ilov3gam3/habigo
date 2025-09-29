@@ -21,7 +21,8 @@
 
     <%
       // Lấy danh sách phòng mới nhất
-      List<Room> rooms = new RoomDao().get5LatestRooms();
+      List<Room> normalRooms = new RoomDao().getAllNormalRooms();
+      List<Room> premiumRooms = new RoomDao().getAllPremiumRooms();
     %>
 
     <!-- Đề Xuất Nổi Bật -->
@@ -31,7 +32,7 @@
         <a href="#" class="btn btn-primary btn-sm">Xem Tất Cả</a>
       </div>
       <div class="row">
-        <% for (Room r : rooms) { %>
+        <% for (Room r : premiumRooms) { %>
         <div class="col-md-3 mb-4 d-flex">
           <div class="card shadow-sm h-100 w-100">
             <!-- Ảnh cùng chiều cao -->
@@ -70,7 +71,7 @@
         <a href="#" class="btn btn-primary btn-sm">Xem Tất Cả</a>
       </div>
       <div class="row">
-        <% for (Room r : rooms) { %>
+        <% for (Room r : normalRooms) { %>
         <div class="col-md-3 mb-4 d-flex">
           <div class="card shadow-sm h-100 w-100">
             <!-- Ảnh cùng chiều cao -->
