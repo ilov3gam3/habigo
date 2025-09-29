@@ -3,7 +3,6 @@ package Model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -49,7 +48,7 @@ public class Room extends DistributedEntity {
     private String description;
 
     @ManyToMany
-    private List<Utility> utilities;
+    private Set<Utility> utilities;
 
     private boolean isAvailable = true;
 

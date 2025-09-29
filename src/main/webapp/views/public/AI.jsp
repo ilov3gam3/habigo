@@ -36,13 +36,14 @@
     const prompt = document.getElementById("prompt").value.trim();
     if(!prompt) return alert("Vui lòng nhập yêu cầu!");
 
+    const formData = new FormData();
+    formData.append("prompt", prompt);
+
     const res = await fetch("<%=request.getContextPath()%>/ask-room-ai", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ prompt })
+      body: formData
     });
+
 
     const data = await res.json();
 
@@ -61,12 +62,14 @@
           div.innerHTML = `
             <div class="card h-100 shadow-sm">
               <div class="card-body">
-                <h5 class="card-title">${room.name}</h5>
-                <p class="card-text"><strong>Giá:</strong> ${room.price.toLocaleString()} VNĐ</p>
-                <p class="card-text"><strong>Địa chỉ:</strong> ${room.location}</p>
-                <p class="card-text"><strong>Diện tích:</strong> ${room.area} m²</p>
-                <p class="card-text"><strong>PN:</strong> ${room.bedrooms}, <strong>WC:</strong> ${room.bathrooms}</p>
-                <p class="card-text"><strong>Tiện ích:</strong> ${room.utilities}</p>
+                <a href="<%=request.getContextPath()%>/room-detail?id=\${room.id}">
+                <h5 class="card-title">\${room.name}</h5>
+                </a>
+                <p class="card-text"><strong>Giá:</strong> \${room.price.toLocaleString()} VNĐ</p>
+                <p class="card-text"><strong>Địa chỉ:</strong> \${room.location}</p>
+                <p class="card-text"><strong>Diện tích:</strong> \${room.area} m²</p>
+                <p class="card-text"><strong>PN:</strong> \${room.bedrooms}, <strong>WC:</strong> \${room.bathrooms}</p>
+                <p class="card-text"><strong>Tiện ích:</strong> \${room.utilities}</p>
               </div>
             </div>`;
           roomContainer.appendChild(div);

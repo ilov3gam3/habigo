@@ -25,7 +25,9 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title mb-0">
                                 <i class="bi bi-person-circle me-2"></i>
-                                <%= post.getTenant().getName() %>
+                                <a href="<%=request.getContextPath()%>/profile?id=<%=post.getTenant().getId()%>">
+                                    <%= post.getTenant().getName() %>
+                                </a>
                             </h5>
                             <span class="badge bg-primary"><%= post.getGenderRequirement() %></span>
                         </div>

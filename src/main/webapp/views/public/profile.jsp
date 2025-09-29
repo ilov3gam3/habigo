@@ -60,6 +60,9 @@
                             <span class="text-success">Hoạt động</span>
                             <% } %>
                         </li>
+                        <a href="<%=request.getContextPath()%>/views/user/chat.jsp?chatWith=<%=profile.getId()%>">
+                            <button type="button" class="btn btn-outline-primary">Nhắn tin với người này</button>
+                        </a>
                     </ul>
                 </div>
             </div>

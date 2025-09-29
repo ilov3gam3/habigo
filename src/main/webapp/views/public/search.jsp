@@ -3,6 +3,7 @@
 <%@page import="Model.Room"%>
 <%@page import="Model.Category"%>
 <%@page import="Model.Utility"%>
+<%@ page import="java.util.stream.Collectors" %>
 <!doctype html>
 <html lang="vi">
 <%@include file="../include/head.jsp"%>
@@ -112,6 +113,7 @@
               <div class="card-body">
                 <h5 class="card-title"><%= r.getName() %></h5>
                 <p class="card-text text-truncate"><%= r.getDescription() %></p>
+                <p class="card-text text-truncate"><%= r.getUtilities().stream().map(Utility::getName).collect(Collectors.joining(", ")) %></p>
                 <p class="mb-1"><strong>Giá:</strong> <%= r.getPrice() %> VNĐ</p>
                 <p class="mb-1"><strong>Diện tích:</strong> <%= r.getArea() %> m²</p>
                 <p class="mb-1"><strong>Phòng ngủ:</strong> <%= r.getBedrooms() %> |

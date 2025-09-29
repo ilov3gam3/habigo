@@ -1,18 +1,16 @@
 package Dao;
 
-import Model.Constant.SlotType;
 import Model.Room;
 import Model.User;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 public class RoomDao extends GenericDao<Room> {
     public List<Room> getRoomsOfUser(User user) {
-        TypedQuery<Room> typedQuery = entityManager.createQuery("select r from Room r where r.landlord = :user", Room.class);
+        TypedQuery<Room> typedQuery = entityManager.createQuery("select r from Room r LEFT JOIN FETCH r.images left join fetch r.utilities where r.landlord = :user", Room.class);
         typedQuery.setParameter("user", user);
         return typedQuery.getResultList();
     }
@@ -30,7 +28,8 @@ public class RoomDao extends GenericDao<Room> {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Room> cq = cb.createQuery(Room.class);
         Root<Room> room = cq.from(Room.class);
-
+        room.fetch("images", JoinType.LEFT);
+        room.fetch("utilities", JoinType.LEFT);
         Predicate predicate = cb.or(
                 cb.isTrue(room.get("isAvailable")),
                 cb.isTrue(room.get("isPremium"))
@@ -112,16 +111,27 @@ public class RoomDao extends GenericDao<Room> {
         query.setParameter("landlord", landlord);
         return query.getSingleResult();
     }
-    public List<Room> getAllNormalRooms(){
-        TypedQuery<Room> query = entityManager.createQuery("select r from Room r where r.isAvailable = true", Room.class);
+    public List<Room> getAllNormalRooms() {
+        TypedQuery<Room> query = entityManager.createQuery(
+                "SELECT DISTINCT r FROM Room r LEFT JOIN FETCH r.images left join fetch r.utilities " +
+                        "WHERE r.isAvailable = true", Room.class
+        );
         return query.getResultList();
     }
-    public List<Room> getAllPremiumRooms(){
-        TypedQuery<Room> query = entityManager.createQuery("select r from Room r where r.isPremium = true", Room.class);
+
+    public List<Room> getAllPremiumRooms() {
+        TypedQuery<Room> query = entityManager.createQuery(
+                "SELECT DISTINCT r FROM Room r LEFT JOIN FETCH r.images left join fetch r.utilities " +
+                        "WHERE r.isPremium = true", Room.class
+        );
         return query.getResultList();
     }
-    public List<Room> getAllNormalAndPremium(){
-        TypedQuery<Room> query = entityManager.createQuery("select r from Room r where r.isAvailable = true or r.isPremium = true ", Room.class);
+
+    public List<Room> getAllNormalAndPremium() {
+        TypedQuery<Room> query = entityManager.createQuery(
+                "SELECT DISTINCT r FROM Room r LEFT JOIN FETCH r.images left join fetch r.utilities " +
+                        "WHERE r.isAvailable = true OR r.isPremium = true", Room.class
+        );
         return query.getResultList();
     }
 }

@@ -58,7 +58,7 @@ public class RoomController {
             room.setPrice(price);
             room.setArea(area);
             room.setDescription(description);
-            room.setUtilities(utilities);
+            room.setUtilities(new HashSet<>(utilities));
             long purchasedSlots = new PaymentDao().countNormalSlots(landlord);
             long totalSlots = Config.freePost + purchasedSlots;
             long availablePosts = new RoomDao().countNormalRooms(landlord);
@@ -118,7 +118,7 @@ public class RoomController {
             room.setPrice(price);
             room.setArea(area);
             room.setDescription(description);
-            room.setUtilities(utilities);
+            room.setUtilities(new HashSet<>(utilities));
             room.setAvailable(true);
             new RoomDao().save(room);
             req.getSession().setAttribute("success", "Cập nhật thành công.");

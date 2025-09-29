@@ -81,7 +81,7 @@ public class StartListener implements ServletContextListener {
             room1.setImages(new HashSet<>(List.of("/assets/uploads/room1_1.png", "/assets/uploads/room1_2.jpg")));
             room1.setName("The Muse Đà Nẵng");
             room1.setBedrooms(2);
-            room1.setBedrooms(2);
+            room1.setBathrooms(2);
             room1.setPrice(10000000);
             room1.setArea(80);
             room1.setDescription("""
@@ -97,7 +97,7 @@ public class StartListener implements ServletContextListener {
                 Pháp lý: Sổ hồng sở hữu lâu dài
                 Dự kiến bàn giao nhà: Quý II/2024
                 """);
-            room1.setUtilities(List.of(utility1, utility2, utility4, utility5, utility7, utility8, utility9));
+            room1.setUtilities(new HashSet<>(List.of(utility1, utility2, utility4, utility5, utility7, utility8, utility9)));
             room1.setAvailable(true);
             roomDao.save(room1);
 
@@ -132,7 +132,7 @@ public class StartListener implements ServletContextListener {
                  🏖 Cafe rooftop ngắm biển từ sáng đến đêm
                  Times Hotel & Apartment chắn chắn làm thoả mãn những tín đồ đang tìm chốn nghỉ dưỡng và tận hưởng không gian làm việc yên bình tại thành phố biển xinh đẹp.
                 """);
-            room2.setUtilities(List.of(utility2, utility3, utility4, utility5, utility6, utility7, utility8, utility9));
+            room2.setUtilities(new HashSet<>(List.of(utility2, utility3, utility4, utility5, utility6, utility7, utility8, utility9)));
             room2.setAvailable(true);
             roomDao.save(room2);
         }

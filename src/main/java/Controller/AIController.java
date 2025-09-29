@@ -3,9 +3,11 @@ package Controller;
 import Dao.RoomDao;
 import Model.Room;
 import Model.User;
+import Model.Utility;
 import Util.CometChat;
 import Util.Config;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ import java.util.List;
 
 public class AIController {
     @WebServlet("/ask-room-ai")
+    @MultipartConfig
     public static class AskRoomAI extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,7 +47,7 @@ public class AIController {
                 obj.put("area", r.getArea());
                 obj.put("bedrooms", r.getBedrooms());
                 obj.put("bathrooms", r.getBathrooms());
-                obj.put("utilities", String.join(",", r.getUtilities().stream().map(u -> u.getName()).toList()));
+                obj.put("utilities", String.join(",", r.getUtilities().stream().map(Utility::getName).toList()));
 
                 // Lấy tên tỉnh, quận, xã
                 String province = getProvinceName(r.getProvinceCode());
@@ -79,6 +82,7 @@ public class AIController {
             resp.setContentType("application/json");
 
             try {
+                System.out.println(prompt);
                 String aiResponse = askAI(prompt);
 
                 // parse response AI -> JSON object
@@ -135,8 +139,7 @@ public class AIController {
             contents.put(content);
             payload.put("contents", contents);
 
-            String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
-//            String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b-latest:generateContent";
+            String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
