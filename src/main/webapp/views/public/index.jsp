@@ -23,10 +23,15 @@
 
         <%
             // Lấy danh sách phòng mới nhất
-            List<Room> normalRooms = new RoomDao().getAllNormalRooms();
-            List<Room> premiumRooms = new RoomDao().getAllPremiumRooms();
+            RoomDao roomDao = new RoomDao();
+            RoommatePostDao roommatePostDao = new RoommatePostDao();
+            List<Room> normalRooms = roomDao.getAllNormalRooms();
+            List<Room> premiumRooms = roomDao.getAllPremiumRooms();
             // Lấy bài đăng mới nhất
-            List<RoommatePost> roommatePosts = new RoommatePostDao().get5NewestWithUser();
+            List<RoommatePost> roommatePosts = roommatePostDao.get5NewestWithUser();
+
+            roomDao.close();
+            roommatePostDao.close();
         %>
 
         <!-- Bài Normal -->

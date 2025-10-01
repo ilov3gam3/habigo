@@ -29,7 +29,7 @@
                     <li class="nav-item"><a class="nav-link" href="#">Phòng Trọ</a></li>
                     <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/find-roommate">Tìm người ở ghép</a></li>
                     <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/ask-room-ai">Habigo AI</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Về Chúng Tôi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/views/public/about-us.jsp">Giới thiệu</a></li>
                     <% if (user != null) { %>
                     <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/views/user/chat.jsp">Chat</a></li>
                     <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/logout">Đăng xuất</a></li>

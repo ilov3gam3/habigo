@@ -57,7 +57,9 @@
             <!-- Danh sách bài đăng -->
             <div class="row">
               <%
-                List<RoommatePost> posts = new RoommatePostDao().getPostsOfUser(user);
+                RoommatePostDao roommatePostDao = new RoommatePostDao();
+                List<RoommatePost> posts = roommatePostDao.getPostsOfUser(user);
+                roommatePostDao.close();
                 if (posts == null || posts.isEmpty()) {
               %>
               <div class="col-12">

@@ -39,7 +39,9 @@ public class UserController {
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             String email = req.getParameter("email");
             String password = req.getParameter("password");
-            User user = new UserDao().findByEmail(email);
+            UserDao userDao = new UserDao();
+            User user = userDao.findByEmail(email);
+            userDao.close();
             if (user == null) {
                 req.getSession().setAttribute("error", "Tài khoản hoặc mật khẩu không đúng.");
                 resp.sendRedirect(req.getContextPath() + "/login");
@@ -130,6 +132,7 @@ public class UserController {
             Role role = Role.valueOf(req.getParameter("role"));
             user.setRole(role);
             userDao.save(user);
+            userDao.close();
             // start register user in comet chat
             CometChat.register(user);
             // end register user in comet chat
@@ -141,12 +144,14 @@ public class UserController {
     public static class VerifyServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            UserDao userDao = new UserDao();
             String token = req.getParameter("token");
-            User user = new UserDao().findByToken(token);
+            User user = userDao.findByToken(token);
             if (user != null) {
                 user.setToken(null);
                 user.setVerified(true);
-                new UserDao().update(user);
+                userDao.update(user);
+                userDao.close();
                 req.getSession().setAttribute("success", "Xác thực tài khoản thành công.");
             } else {
                 req.getSession().setAttribute("error", "Token không tồn tại hoặc không hợp lệ");
@@ -171,12 +176,14 @@ public class UserController {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            UserDao userDao = new UserDao();
             String email = req.getParameter("email");
-            User user = new UserDao().findByEmail(email);
+            User user = userDao.findByEmail(email);
             if (user != null) {
                 String uuid = UUID.randomUUID().toString();
                 user.setToken(uuid);
-                new UserDao().update(user);
+                userDao.update(user);
+                userDao.close();
                 // send mail
                 ExecutorService executorService = Executors.newSingleThreadExecutor();
                 executorService.submit(() -> {
@@ -204,14 +211,16 @@ public class UserController {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            UserDao userDao = new UserDao();
             String token = req.getParameter("token");
-            User user = new UserDao().findByToken(token);
+            User user = userDao.findByToken(token);
             if (user != null) {
                 String password = req.getParameter("password");
                 String re_password = req.getParameter("confirmPassword");
                 if (password.equals(re_password) && !password.isEmpty()) {
                     user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-                    new UserDao().update(user);
+                    userDao.update(user);
+                    userDao.close();
                     req.getSession().setAttribute("success", "Đặt lại mật khẩu thành công.");
                     resp.sendRedirect(req.getContextPath() + "/login");
                 } else {
@@ -228,10 +237,10 @@ public class UserController {
     public static class ChangePasswordServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            UserDao userDao = new UserDao();
             String oldPassword = req.getParameter("oldPassword");
             String newPassword = req.getParameter("newPassword");
             String confirmPassword = req.getParameter("confirmPassword");
-            UserDao userDao = new UserDao();
             User user = (User) req.getSession().getAttribute("user");
             if (!BCrypt.checkpw(oldPassword, user.getPassword())) {
                 req.getSession().setAttribute("error", "Mật khẩu cũ không đúng.");
@@ -245,6 +254,7 @@ public class UserController {
             }
             user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
             userDao.update(user);
+            userDao.close();
             req.getSession().setAttribute("success", "Đã cập nhật mật khẩu.");
             resp.sendRedirect(req.getHeader("referer"));
         }
@@ -254,11 +264,13 @@ public class UserController {
     public static class UpdateAvatarServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            UserDao userDao = new UserDao();
             try {
                 String filename = UploadImage.saveImage(req, "avatar");
                 User user = (User) req.getSession().getAttribute("user");
                 user.setAvatar(filename);
-                new UserDao().update(user);
+                userDao.update(user);
+                userDao.close();
                 CometChat.updateUser(user);
                 req.getSession().setAttribute("user", user);
             } catch (ServletException e){
@@ -307,6 +319,7 @@ public class UserController {
             String name = (String) payload.get("name");
             String avatar = (String) payload.get("picture");
             User user = userDao.findByEmail(email);
+            userDao.close();
             if (user == null) {
                 user = new User();
                 user.setEmail(email);
@@ -368,6 +381,7 @@ public class UserController {
             Role role = Role.valueOf(req.getParameter("role"));
             tempUser.setRole(role);
             userDao.save(tempUser);
+            userDao.close();
             // start register user in comet chat
             CometChat.register(tempUser);
             // end register user in comet chat
@@ -458,6 +472,7 @@ public class UserController {
             user.setPhone(phone);
             user.setEmail(email);
             userDao.update(user);
+            userDao.close();
             CometChat.updateUser(user);
             req.getSession().setAttribute("user", user);
             req.getSession().setAttribute("success", "Cập nhật thành công.");
@@ -499,6 +514,7 @@ public class UserController {
             Role role = Role.valueOf(req.getParameter("role"));
             user.setRole(role);
             userDao.save(user);
+            userDao.close();
             // start register user in comet chat
             CometChat.register(user);
             // end register user in comet chat
@@ -506,7 +522,6 @@ public class UserController {
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
-
     @WebServlet("/profile")
     public static class UserProfileServlet extends HttpServlet {
         @Override

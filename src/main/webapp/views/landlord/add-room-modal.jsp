@@ -5,8 +5,12 @@
 <%@ page import="Dao.UtilityDao" %>
 <%@ page import="Dao.CategoryDao" %>
 <%
-    List<Category> categoryList = new CategoryDao().getAll();
-    List<Utility> utilities = new UtilityDao().getAll();
+    CategoryDao categoryDao = new CategoryDao();
+    UtilityDao utilityDao = new UtilityDao();
+    List<Category> categoryList = categoryDao.getAll();
+    List<Utility> utilities = utilityDao.getAll();
+    categoryDao.close();
+    utilityDao.close();
 %>
 
 <div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">

@@ -24,7 +24,9 @@ public class RoomController {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             long categoryId = Long.parseLong(req.getParameter("categoryId"));
-            Category category = new CategoryDao().getById(categoryId);
+            CategoryDao categoryDao = new CategoryDao();
+            Category category = categoryDao.getById(categoryId);
+
             int provinceCode = Integer.parseInt(req.getParameter("provinceCode"));
             int districtCode = Integer.parseInt(req.getParameter("districtCode"));
             int wardCode = Integer.parseInt(req.getParameter("wardCode"));
@@ -37,10 +39,15 @@ public class RoomController {
             long price = Long.parseLong(req.getParameter("price"));
             float area = Float.parseFloat(req.getParameter("area"));
             String description = req.getParameter("description");
-            List<Long> utilityIds = Optional.ofNullable(req.getParameterValues("utilityIds")).stream().flatMap(Arrays::stream)
+
+            List<Long> utilityIds = Optional.ofNullable(req.getParameterValues("utilityIds")).stream()
+                    .flatMap(Arrays::stream)
                     .map(Long::parseLong)
                     .toList();
-            List<Utility> utilities = new UtilityDao().getByIds(utilityIds);
+
+            UtilityDao utilityDao = new UtilityDao();
+            List<Utility> utilities = utilityDao.getByIds(utilityIds);
+
             User landlord = (User) req.getSession().getAttribute("user");
 
             Room room = new Room();
@@ -59,16 +66,29 @@ public class RoomController {
             room.setArea(area);
             room.setDescription(description);
             room.setUtilities(new HashSet<>(utilities));
-            long purchasedSlots = new PaymentDao().countNormalSlots(landlord);
+
+            PaymentDao paymentDao = new PaymentDao();
+            long purchasedSlots = paymentDao.countNormalSlots(landlord);
+            paymentDao.close();
+
             long totalSlots = Config.freePost + purchasedSlots;
-            long availablePosts = new RoomDao().countNormalRooms(landlord);
+
+            RoomDao roomDao = new RoomDao();
+            long availablePosts = roomDao.countNormalRooms(landlord);
+
             if (availablePosts < totalSlots) {
                 room.setAvailable(true);
             } else {
                 room.setAvailable(false);
             }
             room.setPremium(false);
-            new RoomDao().save(room);
+            roomDao.save(room);
+
+            // đóng dao
+            categoryDao.close();
+            utilityDao.close();
+            roomDao.close();
+
             req.getSession().setAttribute("success", "Thêm phòng thành công.");
             resp.sendRedirect(req.getHeader("referer"));
         }
@@ -81,7 +101,10 @@ public class RoomController {
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             long roomId = Long.parseLong(req.getParameter("roomId"));
             long categoryId = Long.parseLong(req.getParameter("categoryId"));
-            Category category = new CategoryDao().getById(categoryId);
+
+            CategoryDao categoryDao = new CategoryDao();
+            Category category = categoryDao.getById(categoryId);
+
             int provinceCode = Integer.parseInt(req.getParameter("provinceCode"));
             int districtCode = Integer.parseInt(req.getParameter("districtCode"));
             int wardCode = Integer.parseInt(req.getParameter("wardCode"));
@@ -94,13 +117,20 @@ public class RoomController {
             long price = Long.parseLong(req.getParameter("price"));
             float area = Float.parseFloat(req.getParameter("area"));
             String description = req.getParameter("description");
-            List<Long> utilityIds = Optional.ofNullable(req.getParameterValues("utilityIds")).stream().flatMap(Arrays::stream)
+
+            List<Long> utilityIds = Optional.ofNullable(req.getParameterValues("utilityIds")).stream()
+                    .flatMap(Arrays::stream)
                     .map(Long::parseLong)
                     .toList();
-            List<Utility> utilities = new UtilityDao().getByIds(utilityIds);
+
+            UtilityDao utilityDao = new UtilityDao();
+            List<Utility> utilities = utilityDao.getByIds(utilityIds);
+
             User landlord = (User) req.getSession().getAttribute("user");
 
-            Room room = new RoomDao().getById(roomId);
+            RoomDao roomDao = new RoomDao();
+            Room room = roomDao.getById(roomId);
+
             room.setLandlord(landlord);
             room.setCategory(category);
             room.setProvinceCode(provinceCode);
@@ -108,10 +138,12 @@ public class RoomController {
             room.setWardCode(wardCode);
             room.setStreet(street);
             room.setMapEmbedUrl(mapEmbedUrl);
+
             if (req.getPart("image") != null && req.getPart("image").getSize() > 0) {
                 List<String> images = UploadImage.multipleFileUpload(req, "images");
                 room.setImages(new HashSet<>(images));
             }
+
             room.setName(name);
             room.setBedrooms(bedrooms);
             room.setBathrooms(bathrooms);
@@ -120,7 +152,14 @@ public class RoomController {
             room.setDescription(description);
             room.setUtilities(new HashSet<>(utilities));
             room.setAvailable(true);
-            new RoomDao().save(room);
+
+            roomDao.save(room);
+
+            // đóng dao
+            categoryDao.close();
+            utilityDao.close();
+            roomDao.close();
+
             req.getSession().setAttribute("success", "Cập nhật thành công.");
             resp.sendRedirect(req.getHeader("referer"));
         }
@@ -133,8 +172,9 @@ public class RoomController {
             req.getRequestDispatcher("/views/public/room-detail.jsp").forward(req, resp);
         }
     }
+
     @WebServlet("/search")
-    public static class SearchRoom extends HttpServlet{
+    public static class SearchRoom extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest request, HttpServletResponse response)
                 throws ServletException, IOException {
@@ -163,15 +203,21 @@ public class RoomController {
                     ? Double.parseDouble(priceMinStr) : null;
             Double priceMax = (priceMaxStr != null && !priceMaxStr.isEmpty())
                     ? Double.parseDouble(priceMaxStr) : null;
+
             RoomDao roomDao = new RoomDao();
             CategoryDao categoryDao = new CategoryDao();
             UtilityDao utilityDao = new UtilityDao();
+
             List<Room> rooms = roomDao.searchRooms(searchString, categoryId, provinceCode, utilityIds, priceMin, priceMax);
 
-            // gán categories và utilities cho form
             request.setAttribute("categoryList", categoryDao.getAll());
             request.setAttribute("utilities", utilityDao.getAll());
             request.setAttribute("rooms", rooms);
+
+            // đóng dao
+            roomDao.close();
+            categoryDao.close();
+            utilityDao.close();
 
             request.getRequestDispatcher("/views/public/search.jsp").forward(request, response);
         }
@@ -188,52 +234,60 @@ public class RoomController {
             Room room = roomDao.getById(id);
 
             if (room == null || !room.getLandlord().equals(landlord)) {
+                roomDao.close();
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền thay đổi phòng này");
                 return;
             }
 
             if (!room.isAvailable()) {
-                // đang false, muốn bật lên true -> kiểm tra quota
-                long purchasedSlots = new PaymentDao().countNormalSlots(landlord);
+                PaymentDao paymentDao = new PaymentDao();
+                long purchasedSlots = paymentDao.countNormalSlots(landlord);
+                paymentDao.close();
+
                 long totalSlots = Config.freePost + purchasedSlots;
                 long availablePosts = roomDao.countNormalRooms(landlord);
 
                 if (availablePosts < totalSlots) {
-                    room.setAvailable(true);  // còn slot thì bật
+                    room.setAvailable(true);
                     roomDao.update(room);
                 } else {
+                    roomDao.close();
                     req.getSession().setAttribute("error", "Bạn đã đạt giới hạn số bài hiển thị.");
                     resp.sendRedirect(req.getHeader("referer"));
                     return;
                 }
             } else {
-                // đang true, muốn tắt -> luôn cho phép
                 room.setAvailable(false);
                 roomDao.update(room);
             }
+
+            roomDao.close();
             req.getSession().setAttribute("success", "Thay đổi trạng thái thành công.");
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
+
     @WebServlet("/landlord/change-premium")
     public static class ChangePremiumServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             long id = Long.parseLong(req.getParameter("id"));
             User landlord = (User) req.getSession().getAttribute("user");
+
             RoomDao roomDao = new RoomDao();
             PaymentDao paymentDao = new PaymentDao();
 
             Room room = roomDao.getById(id);
 
             if (room == null || !room.getLandlord().equals(landlord)) {
+                roomDao.close();
+                paymentDao.close();
                 req.getSession().setAttribute("error", "Phòng không tồn tại hoặc bạn không có quyền.");
                 resp.sendRedirect(req.getHeader("referer"));
                 return;
             }
 
             if (!room.isPremium()) {
-                // đang false, muốn bật premium -> kiểm tra quota
                 long purchasedPremiumSlots = paymentDao.countPremiumSlots(landlord);
                 long premiumRooms = roomDao.countPremiumRooms(landlord);
 
@@ -245,14 +299,15 @@ public class RoomController {
                     req.getSession().setAttribute("error", "Bạn đã đạt giới hạn số bài Premium.");
                 }
             } else {
-                // đang true, muốn tắt premium -> luôn cho phép
                 room.setPremium(false);
                 roomDao.update(room);
                 req.getSession().setAttribute("success", "Tắt Premium thành công.");
             }
 
+            roomDao.close();
+            paymentDao.close();
+
             resp.sendRedirect(req.getHeader("referer"));
         }
     }
-
 }

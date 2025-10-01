@@ -36,7 +36,9 @@ public class AIController {
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             String promptUser = req.getParameter("prompt");
-            List<Room> rooms = new RoomDao().getAllNormalAndPremium(); // cần hàm này
+            RoomDao roomDao = new RoomDao();
+            List<Room> rooms = roomDao.getAllNormalAndPremium();
+            roomDao.close();
 
             JSONArray roomArray = new JSONArray();
             for (Room r : rooms) {
@@ -82,7 +84,6 @@ public class AIController {
             resp.setContentType("application/json");
 
             try {
-                System.out.println(prompt);
                 String aiResponse = askAI(prompt);
 
                 // parse response AI -> JSON object

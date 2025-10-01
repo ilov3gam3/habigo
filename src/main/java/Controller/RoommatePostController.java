@@ -32,6 +32,7 @@ public class RoommatePostController {
             roommatePost.setDuration(duration);
             roommatePost.setTenant(user);
             roommatePostDao.save(roommatePost);
+            roommatePostDao.close();
             req.getSession().setAttribute("success", "Đăng bài thành công.");
             resp.sendRedirect(req.getHeader("referer"));
         }
@@ -41,7 +42,9 @@ public class RoommatePostController {
     public static class FindRoommateServlet extends HttpServlet {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            List<RoommatePost> roommatePosts = new RoommatePostDao().getAllWithUser();
+            RoommatePostDao roommatePostDao = new RoommatePostDao();
+            List<RoommatePost> roommatePosts = roommatePostDao.getAllWithUser();
+            roommatePostDao.close();
             req.setAttribute("roommatePosts", roommatePosts);
             req.getRequestDispatcher("/views/public/find-roommate.jsp").forward(req, resp);
         }

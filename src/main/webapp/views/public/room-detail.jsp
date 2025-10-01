@@ -10,8 +10,10 @@
 <main class="flex-fill">
     <div class="container py-5">
         <%
+            RoomDao roomDao = new RoomDao();
             Long roomId = Long.parseLong(request.getParameter("id"));
-            Room room = new RoomDao().getById(roomId);
+            Room room = roomDao.getById(roomId);
+            roomDao.close();
         %>
 
         <div class="row">

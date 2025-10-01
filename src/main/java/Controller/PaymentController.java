@@ -99,13 +99,15 @@ public class PaymentController {
             String vnp_SecureHash = VNPayUtil.hmacSHA512(Config.secretKey, hashData.toString());
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             Payment payment = new Payment();
+            PaymentDao paymentDao = new PaymentDao();
             payment.setAmount(amount / 100);
             payment.setTxnRef(vnp_TxnRef);
             payment.setOrderInfo(vnp_OrderInfo);
             payment.setLandlord(landlord);
             payment.setQuantity(quantity);
             payment.setSlotType(slotType);
-            new PaymentDao().save(payment);
+            paymentDao.save(payment);
+            paymentDao.close();
             String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
             resp.sendRedirect(paymentUrl);
         }
@@ -163,6 +165,7 @@ public class PaymentController {
                 throw new RuntimeException(e);
             }
             paymentDao.update(payment);
+            paymentDao.close();
             if (payment.transactionStatus != TransactionStatus.SUCCESS) {
                 req.getSession().setAttribute("flash_error", "Thanh toán không thành công.");
                 resp.sendRedirect(req.getContextPath() + "/landlord/manage");
@@ -193,7 +196,9 @@ public class PaymentController {
             payment.setSlotType(slotType);
             payment.setAmount(amount);
             payment.setOrderInfo(UUID.randomUUID().toString().replace("-", ""));
-            new PaymentDao().save(payment);
+            PaymentDao paymentDao = new PaymentDao();
+            paymentDao.save(payment);
+            paymentDao.close();
             String qrCoded = "https://img.vietqr.io/image/" + Config.bankCode + "-" + Config.bankNumber + "-print.png?amount=" + amount + "&addInfo=" + payment.getOrderInfo();
             resp.getWriter().write("{\"qrCode\":\"" + qrCoded + "\", \"orderInfo\":\"" + payment.getOrderInfo() + "\"}");
         }
@@ -229,6 +234,7 @@ public class PaymentController {
             payment.setPaid_at(paid_at);
             payment.setBankTranNo(bankTranNo);
             paymentDao.save(payment);
+            paymentDao.close();
             resp.getWriter().write("{\"success\": false}");
         }
     }
@@ -238,12 +244,10 @@ public class PaymentController {
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             String orderInfo = req.getParameter("orderInfo");
-            System.out.println(orderInfo);
             PaymentDao paymentDao = new PaymentDao();
             Payment payment = paymentDao.findByOrderInfo(orderInfo);
-            System.out.println(payment.getTransactionStatus());
+            paymentDao.close();
             resp.setContentType("application/json;charset=UTF-8");
-
             if (payment != null) {
                 resp.getWriter().write("{\"status\":\"" + payment.getTransactionStatus() + "\"}");
             } else {

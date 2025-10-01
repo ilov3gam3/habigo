@@ -54,6 +54,8 @@
                             long usedPremium = roomDao.countPremiumRooms(user);
 
                             List<Room> rooms = roomDao.getRoomsOfUser(user);
+
+                            roomDao.close();
                         %>
 
                         <div class="alert alert-info">
@@ -128,7 +130,8 @@
                         </div>
 
                         <%
-                            List<Payment> payments = new PaymentDao().getPaymentsOfLandlord(user);
+                            List<Payment> payments = paymentDao.getPaymentsOfLandlord(user);
+                            paymentDao.close();
                         %>
                         <table class="table table-bordered">
                             <thead>

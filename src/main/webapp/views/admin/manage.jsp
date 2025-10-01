@@ -19,7 +19,9 @@
         <!-- USERS TAB -->
         <div id="users" class="tab-pane active">
           <%
-            List<User> users = new UserDao().getAll();
+            UserDao userDao = new UserDao();
+            List<User> users = userDao.getAll();
+            userDao.close();
           %>
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Danh sách người dùng</h4>

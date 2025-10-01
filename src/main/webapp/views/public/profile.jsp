@@ -15,10 +15,14 @@
     <div class="container py-5">
         <%
             long userId = Long.parseLong(request.getParameter("id"));
-            User profile = new UserDao().getById(userId);
+            UserDao userDao = new UserDao();
+            User profile = userDao.getById(userId);
+            userDao.close();
             List<Room> rooms = null;
             if (profile.getRole() == Role.LANDLORD) {
-                rooms = new RoomDao().getRoomsOfUser(profile);
+                RoomDao roomDao = new RoomDao();
+                rooms = roomDao.getRoomsOfUser(profile);
+                roomDao.close();
             }
         %>
         <div class="row justify-content-center">
