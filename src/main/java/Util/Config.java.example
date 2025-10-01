@@ -26,4 +26,7 @@ public class Config {
 
 //  public static String gemini_api_key = "";
     public static String gemini_api_key = "";
+
+    public static String bankCode = "";
+    public static String bankNumber = "";
 }

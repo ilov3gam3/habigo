@@ -85,7 +85,7 @@ public class UploadImage {
                 try (InputStream fileContent = part.getInputStream()) {
                     Files.copy(fileContent, filePath, StandardCopyOption.REPLACE_EXISTING);
                 }
-                newFileName = "assets/uploads/" + newFileName;
+                newFileName = "/assets/uploads/" + newFileName;
                 fileNames.add(newFileName);
             }
         }
