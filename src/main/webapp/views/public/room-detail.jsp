@@ -19,13 +19,13 @@
             <div class="col-md-6">
                 <!-- Ảnh chính -->
                 <div class="border rounded mb-3 text-center">
-                    <img id="mainImage" src="<%= request.getContextPath() + "/" + room.getImages().iterator().next() %>"
+                    <img id="mainImage" src="<%= request.getContextPath()  + room.getImages().iterator().next() %>"
                          class="img-fluid rounded" style="max-height: 400px; object-fit: cover;">
                 </div>
 
                 <!-- Thumbnail -->
                 <div class="d-flex gap-2 flex-wrap">
-                    <% for(String img : room.getImages()) { img = request.getContextPath() + "/" + img; %>
+                    <% for(String img : room.getImages()) { img = request.getContextPath()  + img; %>
                     <img src="<%= img %>"
                          class="img-thumbnail thumb-img"
                          style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"

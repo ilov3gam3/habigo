@@ -80,7 +80,7 @@
                 <div class="col-md-3 mb-4 d-flex">
                     <div class="card shadow-sm h-100 w-100">
                         <!-- Ảnh cùng chiều cao -->
-                        <img src="<%= r.getImages().iterator().hasNext() ? request.getContextPath() + "/" + r.getImages().iterator().next() : "https://via.placeholder.com/300x200" %>"
+                        <img src="<%= r.getImages().iterator().hasNext() ? request.getContextPath() + r.getImages().iterator().next() : "https://via.placeholder.com/300x200" %>"
                              class="card-img-top"
                              alt="Room image"
                              style="height:200px; object-fit:cover;">

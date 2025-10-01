@@ -108,7 +108,7 @@
           <div class="col-md-6 mb-4">
             <div class="card h-100 shadow-sm">
               <% if (r.getImages() != null && !r.getImages().isEmpty()) { %>
-              <img src="<%= request.getContextPath() + "/" + r.getImages().iterator().next() %>" class="card-img-top" alt="Ảnh phòng">
+              <img src="<%= request.getContextPath() + r.getImages().iterator().next() %>" class="card-img-top" alt="Ảnh phòng">
               <% } %>
               <div class="card-body">
                 <h5 class="card-title"><%= r.getName() %></h5>

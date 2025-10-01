@@ -20,7 +20,7 @@
             <!-- Sidebar -->
             <div class="col-md-3">
                 <div class="card shadow-sm p-3 mb-4 text-center">
-                    <img src="<%=user.getAvatar()%>" class="rounded-circle mb-2" width="100" height="100" alt="avatar">
+                    <img src="<%=user.getAvatar()%>" class="rounded-circle mb-2 mx-auto d-block" width="100" height="100" alt="avatar">
                     <h5 class="mb-0"><%=user.getName()%></h5>
                     <small class="text-muted"><%=user.getEmail()%></small>
                     <div class="mt-3">
@@ -65,7 +65,7 @@
                             <%
                                 for (Room r : rooms) {
                                     String img = (r.getImages() != null && !r.getImages().isEmpty())
-                                            ? request.getContextPath() + "/" + r.getImages().iterator().next()
+                                            ? request.getContextPath() + r.getImages().iterator().next()
                                             : request.getContextPath() + "/assets/img/no-image.png";
                             %>
                             <div class="col-md-4 mb-4">

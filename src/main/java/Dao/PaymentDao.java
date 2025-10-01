@@ -9,8 +9,11 @@ import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 public class PaymentDao extends GenericDao<Payment>{
-    public Payment findByOrderInfo(String orderInfo){
-        TypedQuery<Payment> query = entityManager.createQuery("select p from Payment p where p.orderInfo = :orderInfo", Payment.class);
+    public Payment findByOrderInfo(String orderInfo) {
+        TypedQuery<Payment> query = entityManager.createQuery(
+                "select p from Payment p where :orderInfo like concat('%', p.orderInfo, '%')",
+                Payment.class
+        );
         query.setParameter("orderInfo", orderInfo);
         return query.getSingleResult();
     }

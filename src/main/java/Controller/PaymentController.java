@@ -7,12 +7,16 @@ import Model.Payment;
 import Model.User;
 import Util.Config;
 import Util.VNPayUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -168,4 +172,84 @@ public class PaymentController {
             resp.sendRedirect(req.getContextPath() + "/landlord/manage");
         }
     }
+
+    @WebServlet("/tenant/casso-create")
+    @MultipartConfig
+    public static class CassoCreateServlet extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            User landlord = (User) req.getSession().getAttribute("user");
+            int quantity = Integer.parseInt(req.getParameter("quantity"));
+            SlotType slotType = SlotType.valueOf(req.getParameter("slotType"));
+            long amount;
+            if (slotType == SlotType.NORMAL) {
+                amount = (long) quantity * Config.pricePerPost;
+            } else {
+                amount = (long) quantity * Config.premiumPrice;
+            }
+            Payment payment = new Payment();
+            payment.setLandlord(landlord);
+            payment.setQuantity(quantity);
+            payment.setSlotType(slotType);
+            payment.setAmount(amount);
+            payment.setOrderInfo(UUID.randomUUID().toString().replace("-", ""));
+            new PaymentDao().save(payment);
+            String qrCoded = "https://img.vietqr.io/image/" + Config.bankCode + "-" + Config.bankNumber + "-print.png?amount=" + amount + "&addInfo=" + payment.getOrderInfo();
+            resp.getWriter().write("{\"qrCode\":\"" + qrCoded + "\", \"orderInfo\":\"" + payment.getOrderInfo() + "\"}");
+        }
+    }
+
+    @WebServlet("/casso/webhook")
+    public static class CassoWebhook extends HttpServlet {
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Đọc body request
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader reader = req.getReader()) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            }
+            String json = sb.toString();
+
+            // Parse JSON
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(json);
+            String orderInfo = root.path("data").path("description").asText();
+            String bankCode = root.path("data").path("bankAbbreviation").asText();
+            String transactionNo = root.path("data").path("id").asText();
+            String bankTranNo = root.path("data").path("accountNumber").asText();
+            Timestamp paid_at = Timestamp.valueOf(root.path("data").path("transactionDateTime").asText());
+            PaymentDao paymentDao = new PaymentDao();
+            Payment payment = paymentDao.findByOrderInfo(orderInfo);
+            payment.setBankCode(bankCode);
+            payment.setTransactionNo(transactionNo);
+            payment.setTransactionStatus(TransactionStatus.SUCCESS);
+            payment.setPaid_at(paid_at);
+            payment.setBankTranNo(bankTranNo);
+            paymentDao.save(payment);
+            resp.getWriter().write("{\"success\": false}");
+        }
+    }
+
+    @WebServlet("/tenant/check-payment")
+    public static class CheckPaymentServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            String orderInfo = req.getParameter("orderInfo");
+            System.out.println(orderInfo);
+            PaymentDao paymentDao = new PaymentDao();
+            Payment payment = paymentDao.findByOrderInfo(orderInfo);
+            System.out.println(payment.getTransactionStatus());
+            resp.setContentType("application/json;charset=UTF-8");
+
+            if (payment != null) {
+                resp.getWriter().write("{\"status\":\"" + payment.getTransactionStatus() + "\"}");
+            } else {
+                resp.getWriter().write("{\"status\":\"NOT_FOUND\"}");
+            }
+        }
+    }
+
 }
